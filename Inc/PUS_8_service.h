@@ -69,7 +69,7 @@ typedef enum {
     FPGA_GET_SWT_SAMPLE_SKIP        = 0x88,
     FPGA_GET_SWT_SAMPLES_PER_POINT  = 0x98,
     FPGA_GET_SWT_NPOINTS            = 0xA8,
-
+    CPY_TABLE_FRAM_TO_FPGA	 		= 0xE0,
 	REBOOT_DEVICE 					= 0xF3,
 	JUMP_TO_IMAGE					= 0xF4,
 

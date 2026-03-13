@@ -205,22 +205,6 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 				}
 
 			}
-			// target is both -- copy table from FRAM to FPGA command --
-			else if (pus8_msg_unpacked->FRAM_Table_ID != 0 && pus8_msg_unpacked->FPGA_Probe_ID != 0)
-			{
-				if(pus8_msg_unpacked->FRAM_Table_ID < 1 || pus8_msg_unpacked->FRAM_Table_ID > 8)
-					return UNDEFINED_ID;
-
-				if(pus8_msg_unpacked->FPGA_Probe_ID < 1 || pus8_msg_unpacked->FPGA_Probe_ID > 2)
-					return UNDEFINED_ID;
-
-				uint8_t FRAM_Table_ID = pus8_msg_unpacked->FRAM_Table_ID;
-				uint8_t FPGA_Probe_ID = pus8_msg_unpacked->FPGA_Probe_ID;
-				PUS_8_copy_table_FRAM_to_FPGA(FRAM_Table_ID, FPGA_Probe_ID);
-
-				break;
-			}
-
 			break;
 		}
 
@@ -613,6 +597,20 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			break;
 		}
 
+		case CPY_TABLE_FRAM_TO_FPGA: 
+		{
+			if(pus8_msg_unpacked->FRAM_Table_ID < 1 || pus8_msg_unpacked->FRAM_Table_ID > 8)
+				return UNDEFINED_ID;
+
+			if(pus8_msg_unpacked->FPGA_Probe_ID < 1 || pus8_msg_unpacked->FPGA_Probe_ID > 2)
+				return UNDEFINED_ID;
+
+			uint8_t FRAM_Table_ID = pus8_msg_unpacked->FRAM_Table_ID;
+			uint8_t FPGA_Probe_ID = pus8_msg_unpacked->FPGA_Probe_ID;
+			PUS_8_copy_table_FRAM_to_FPGA(FRAM_Table_ID, FPGA_Probe_ID);
+
+			break;
+		}
 
 		case REBOOT_DEVICE:
 		{
