@@ -130,6 +130,11 @@ TM_Err_Codes PUS_8_unpack_msg(PUS_8_msg *pus8_msg_received, PUS_8_msg_unpacked* 
 				memcpy((uint8_t*)&pus8_msg_unpacked->N_samples_per_step, data_interator, sizeof(pus8_msg_unpacked->N_samples_per_step));
 				data_interator += sizeof(pus8_msg_unpacked->N_samples_per_step);
 				break;
+			case MACRO_SUBOP_ARG_ID:			// MacroSweep 
+                if ((data_end - data_interator) < 1)
+                    return INVALID_PLENGTH;
+                pus8_msg_unpacked->macro_subop = *data_interator++;
+                break;
 
 			default:
 				return UNDEFINED_PARAM_ID;
@@ -610,6 +615,10 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			PUS_8_copy_table_FRAM_to_FPGA(FRAM_Table_ID, FPGA_Probe_ID);
 
 			break;
+		}
+		case MACRO_SWEEP_BIAS_CONFIG: // 0xD1
+        {	
+			return MacroSweep_StartTransaction(pus8_msg_unpacked->macro_subop);
 		}
 
 		case REBOOT_DEVICE:

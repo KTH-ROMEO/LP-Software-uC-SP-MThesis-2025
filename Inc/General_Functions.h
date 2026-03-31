@@ -75,6 +75,12 @@ typedef enum {
 
 } TM_Err_Codes;
 
+typedef enum { 
+    FPGA_MSG_PREAMBLE_0     = 0xB5,
+    FPGA_MSG_PREAMBLE_1     = 0x43,
+    FPGA_MSG_POSTAMBLE      = 0x0A
+} FPGA_UART_Frame_Const_t;  // FPGA-MCU URAT Frame constants
+
 typedef struct {
     //uint8_t len;       
     uint8_t data[FPGA_FRAME_LEN]; 

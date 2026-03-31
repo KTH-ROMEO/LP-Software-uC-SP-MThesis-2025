@@ -44,6 +44,7 @@ typedef struct {
     uint8_t HK_ID; //ADDED
     uint8_t HK_PERIODIC_ID; //ADDED
     uint8_t HK_PERIOD_ID;
+    uint8_t macro_subop; // MacroSweep
 
 } PUS_8_msg_unpacked;
 
@@ -70,6 +71,8 @@ typedef enum {
     FPGA_GET_SWT_SAMPLES_PER_POINT  = 0x98,
     FPGA_GET_SWT_NPOINTS            = 0xA8,
     CPY_TABLE_FRAM_TO_FPGA	 		= 0xE0,
+    MACRO_SWEEP_BIAS_CONFIG         = 0xD1, // MacroSweep
+
 	REBOOT_DEVICE 					= 0xF3,
 	JUMP_TO_IMAGE					= 0xF4,
 
@@ -84,6 +87,7 @@ typedef enum {
     N_F_ARG_ID                  = 0x06,
     N_POINTS_ARG_ID             = 0x07,
     N_SAMPLES_PER_STEP_ARG_ID   = 0x08,
+    MACRO_SUBOP_ARG_ID          = 0x0B, // MacroSweep 
 } FPGA_Arg_ID_t;
 
 /* PUS_8_service */

@@ -161,6 +161,11 @@ void FPGA_process_frame(const uint8_t *frame)
     UART_OUT_OBC_msg msg_to_send = (UART_OUT_OBC_msg){0};
     msg_to_send.PUS_HEADER_PRESENT = 0;
 
+    if (MacroSweep_Active()) { // MacroSweep  
+        if (MacroSweep_HandleFpgaFrame(frame))
+            return;
+    }
+
 	switch(frame[2])
 	{
 		case FPGA_GET_CB_VOL_LVL:
