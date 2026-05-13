@@ -42,7 +42,9 @@ TM_Err_Codes PUS_3_perform_HK(uint8_t* data, PUS_3_msg* pus3_msg_received) {
         if (SID == HK_ID_ACCELEROMETER ||
             SID == HK_ID_MAGNETOMETER  ||
             SID == HK_ID_GYRO          ||
-            SID == HK_ID_PRESSURE       )
+            SID == HK_ID_PRESSURE      ||
+            SID == HK_ID_ERRORS        ||
+            SID == HK_ID_TIMESTAMP      )
         {
         
             switch (pus3_msg_received->PUS_TC_header.message_subtype_id) {

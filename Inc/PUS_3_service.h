@@ -39,7 +39,10 @@ typedef enum {
     HK_ID_ACCELEROMETER   = 0x01,
     HK_ID_MAGNETOMETER    = 0x02,
     HK_ID_GYRO            = 0x03,
-    HK_ID_PRESSURE        = 0x04
+    HK_ID_PRESSURE        = 0x04,
+    HK_ID_ERRORS          = 0x05,
+    HK_ID_TIMESTAMP       = 0x06 
+ 
 } HK_SID;
 
 typedef enum {
