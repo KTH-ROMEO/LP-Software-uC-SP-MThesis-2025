@@ -206,6 +206,18 @@ void FPGA_process_frame(const uint8_t *frame)
 			break;
 		}
 
+        case FPGA_GET_SWT_SWEEP_CNT:
+		{
+
+            UART_FPGA_OBC_Tx_Buffer[0] = FPGA_GET_SWT_SWEEP_CNT;
+            UART_FPGA_OBC_Tx_Buffer[1] = frame[3];
+            UART_FPGA_OBC_Tx_Buffer[2] = frame[4];
+            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 3);
+            msg_to_send.TM_data_len			= 3;
+          
+			break;
+		}
+
 		case FPGA_GET_SWT_SAMPLES_PER_STEP:
 		{
             UART_FPGA_OBC_Tx_Buffer[0] = FPGA_GET_SWT_SAMPLES_PER_STEP;
@@ -323,13 +335,42 @@ void FPGA_process_frame(const uint8_t *frame)
             msg_to_send.PUS_HEADER_PRESENT = 1;
             msg_to_send.SERVICE_ID = HOUSEKEEPING_SERVICE_ID;   
             msg_to_send.SUBTYPE_ID = HK_PARAMETER_REPORT;       
-
             msg_to_send.TM_data[0] = frame[3]; // HK ID 
 
-            memcpy(&msg_to_send.TM_data[1], &frame[4], 7);
-
-            msg_to_send.TM_data_len = 8;
-          
+            switch (frame[3]) // HK_ID
+            {
+                case HK_ID_ACCELEROMETER:
+                {
+                    memcpy(&msg_to_send.TM_data[1], &frame[4], 6);
+                    msg_to_send.TM_data_len = 7;
+                }
+                case HK_ID_MAGNETOMETER:
+                {
+                    memcpy(&msg_to_send.TM_data[1], &frame[4], 5);
+                    msg_to_send.TM_data_len = 6;
+                }
+                case HK_ID_GYRO:
+                {
+                    memcpy(&msg_to_send.TM_data[1], &frame[4], 7);
+                    msg_to_send.TM_data_len = 8;
+                }
+                case HK_ID_PRESSURE:
+                {
+                    memcpy(&msg_to_send.TM_data[1], &frame[4], 6);
+                    msg_to_send.TM_data_len = 7;
+                }
+                case HK_ID_ERRORS:
+                {
+                    memcpy(&msg_to_send.TM_data[1], &frame[4], 6);
+                    msg_to_send.TM_data_len = 7;
+                }
+                case HK_ID_TIMESTAMP:
+                {
+                    memcpy(&msg_to_send.TM_data[1], &frame[4], 7);
+                    msg_to_send.TM_data_len = 8;
+                }
+            }
+            
 			break;
 		}
 
@@ -337,13 +378,21 @@ void FPGA_process_frame(const uint8_t *frame)
 		{
             msg_to_send.PUS_HEADER_PRESENT = 1;
             msg_to_send.SERVICE_ID = HOUSEKEEPING_SERVICE_ID;   
-            msg_to_send.SUBTYPE_ID = HK_PARAMETER_REPORT;       
+            msg_to_send.SUBTYPE_ID = HK_PERIOD_REPORT;       
 
             msg_to_send.TM_data[0] = frame[3]; // HK ID 
+            if (frame[4] == 0x00) // periodic generation action status 
+            {
+                msg_to_send.TM_data[1] = 0x00; // periodic generation unactive               
+            }
+            else
+            {
+                msg_to_send.TM_data[1] = 0x01; // periodic generation active                
+            }
 
-            memcpy(&msg_to_send.TM_data[1], &frame[4], 1);
+            memcpy(&msg_to_send.TM_data[2], &frame[4], 1);
 
-            msg_to_send.TM_data_len = 2;
+            msg_to_send.TM_data_len = 3;
           
             break;
 		}

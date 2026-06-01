@@ -19,14 +19,14 @@ HAL_StatusTypeDef readFRAM(uint16_t addr, uint8_t* buf, uint32_t size) {
 
 static uint16_t get_sweep_table_address(uint8_t save_id) {
     uint16_t addr = 0x2000; // Invalid
-    if (save_id == 1) {addr = FRAM_SWEEP_TABLE_0;}
-    if (save_id == 2) {addr = FRAM_SWEEP_TABLE_1;}
-    if (save_id == 3) {addr = FRAM_SWEEP_TABLE_2;}
-    if (save_id == 4) {addr = FRAM_SWEEP_TABLE_3;}
-    if (save_id == 5) {addr = FRAM_SWEEP_TABLE_4;}
-    if (save_id == 6) {addr = FRAM_SWEEP_TABLE_5;}
-    if (save_id == 7) {addr = FRAM_SWEEP_TABLE_6;}
-    if (save_id == 8) {addr = FRAM_SWEEP_TABLE_7;}
+    if (save_id == 1) {addr = FRAM_SWEEP_TABLE_1;}
+    if (save_id == 2) {addr = FRAM_SWEEP_TABLE_2;}
+    if (save_id == 3) {addr = FRAM_SWEEP_TABLE_3;}
+    if (save_id == 4) {addr = FRAM_SWEEP_TABLE_4;}
+    if (save_id == 5) {addr = FRAM_SWEEP_TABLE_5;}
+    if (save_id == 6) {addr = FRAM_SWEEP_TABLE_6;}
+    if (save_id == 7) {addr = FRAM_SWEEP_TABLE_7;}
+    if (save_id == 8) {addr = FRAM_SWEEP_TABLE_8;}
     return addr;
 }
 

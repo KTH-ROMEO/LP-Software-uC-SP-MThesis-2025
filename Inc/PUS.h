@@ -28,6 +28,7 @@ typedef enum {
     HK_ONE_SHOT                            = 27, // TC
     HK_SET_PERIOD                          = 31, // TC
     HK_GET_PERIOD                          = 33, // TC
+    HK_PERIOD_REPORT                       = 35, // TM
 
 } PUS_HK_Subtype_ID;
 
