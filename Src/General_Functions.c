@@ -175,8 +175,9 @@ void FPGA_process_frame(const uint8_t *frame)
             UART_FPGA_OBC_Tx_Buffer[1] = frame[3];
             UART_FPGA_OBC_Tx_Buffer[2] = frame[4];
             UART_FPGA_OBC_Tx_Buffer[3] = frame[5];
-            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 4);
-            msg_to_send.TM_data_len			= 4;
+            UART_FPGA_OBC_Tx_Buffer[4] = frame[6];
+            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 5);
+            msg_to_send.TM_data_len			= 5;
 
 			break;
 		}
@@ -223,8 +224,10 @@ void FPGA_process_frame(const uint8_t *frame)
             UART_FPGA_OBC_Tx_Buffer[0] = FPGA_GET_SWT_SAMPLES_PER_STEP;
             UART_FPGA_OBC_Tx_Buffer[1] = frame[3];
             UART_FPGA_OBC_Tx_Buffer[2] = frame[4];
-            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 3);
-            msg_to_send.TM_data_len			= 3;
+            UART_FPGA_OBC_Tx_Buffer[3] = frame[5];
+            UART_FPGA_OBC_Tx_Buffer[4] = frame[6];
+            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 5);
+            msg_to_send.TM_data_len			= 5;
 
 			break;
 		}
@@ -235,8 +238,10 @@ void FPGA_process_frame(const uint8_t *frame)
             UART_FPGA_OBC_Tx_Buffer[0] = FPGA_GET_SWT_SAMPLE_SKIP;
             UART_FPGA_OBC_Tx_Buffer[1] = frame[3];
             UART_FPGA_OBC_Tx_Buffer[2] = frame[4];
-            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 3);
-            msg_to_send.TM_data_len			= 3;
+            UART_FPGA_OBC_Tx_Buffer[3] = frame[5];
+            UART_FPGA_OBC_Tx_Buffer[4] = frame[6];
+            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 5);
+            msg_to_send.TM_data_len			= 5;
 
 			break;
 		}
@@ -247,8 +252,10 @@ void FPGA_process_frame(const uint8_t *frame)
             UART_FPGA_OBC_Tx_Buffer[0] = FPGA_GET_SWT_SAMPLES_PER_POINT;
             UART_FPGA_OBC_Tx_Buffer[1] = frame[3];
             UART_FPGA_OBC_Tx_Buffer[2] = frame[4];
-            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 3);
-            msg_to_send.TM_data_len			= 3;
+            UART_FPGA_OBC_Tx_Buffer[3] = frame[5];
+            UART_FPGA_OBC_Tx_Buffer[4] = frame[6];
+            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 5);
+            msg_to_send.TM_data_len			= 5;
           
 			break;
 		}
@@ -259,8 +266,10 @@ void FPGA_process_frame(const uint8_t *frame)
             UART_FPGA_OBC_Tx_Buffer[0] = FPGA_GET_SWT_NPOINTS;
             UART_FPGA_OBC_Tx_Buffer[1] = frame[3];
             UART_FPGA_OBC_Tx_Buffer[2] = frame[4];
-            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 3);
-            msg_to_send.TM_data_len			= 3;
+            UART_FPGA_OBC_Tx_Buffer[3] = frame[5];
+            UART_FPGA_OBC_Tx_Buffer[4] = frame[6];
+            memcpy(msg_to_send.TM_data, UART_FPGA_OBC_Tx_Buffer, 5);
+            msg_to_send.TM_data_len			= 5;
           
 			break;
 		}

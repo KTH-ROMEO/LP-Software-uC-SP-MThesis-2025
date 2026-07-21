@@ -95,11 +95,17 @@ TM_Err_Codes PUS_8_unpack_msg(PUS_8_msg *pus8_msg_received, PUS_8_msg_unpacked* 
 					return INVALID_PLENGTH;
 				pus8_msg_unpacked->step_ID = *data_interator++;
 				break;
-			case VOL_LVL_ARG_ID:
-				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->voltage_level))
+			case SW_VOL_LVL_ARG_ID:
+				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->sw_voltage_level))
 					return INVALID_PLENGTH;
-				memcpy((uint8_t*)&pus8_msg_unpacked->voltage_level, data_interator, sizeof(pus8_msg_unpacked->voltage_level));
-				data_interator += sizeof(pus8_msg_unpacked->voltage_level);
+				memcpy((uint8_t*)&pus8_msg_unpacked->sw_voltage_level, data_interator, sizeof(pus8_msg_unpacked->sw_voltage_level));
+				data_interator += sizeof(pus8_msg_unpacked->sw_voltage_level);
+				break;
+			case CB_VOL_LVL_ARG_ID:
+				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->cb_voltage_level))
+					return INVALID_PLENGTH;
+				memcpy((uint8_t*)&pus8_msg_unpacked->cb_voltage_level, data_interator, sizeof(pus8_msg_unpacked->cb_voltage_level));
+				data_interator += sizeof(pus8_msg_unpacked->cb_voltage_level);
 				break;
 			case N_STEPS_ARG_ID:
 				if ((data_end - data_interator) < 1)
@@ -130,12 +136,35 @@ TM_Err_Codes PUS_8_unpack_msg(PUS_8_msg *pus8_msg_received, PUS_8_msg_unpacked* 
 				memcpy((uint8_t*)&pus8_msg_unpacked->N_samples_per_step, data_interator, sizeof(pus8_msg_unpacked->N_samples_per_step));
 				data_interator += sizeof(pus8_msg_unpacked->N_samples_per_step);
 				break;
+			case SW_N_SWEEPS_ARG_ID:
+				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->SW_n_sweeps))
+					return INVALID_PLENGTH;
+				memcpy((uint8_t*)&pus8_msg_unpacked->SW_n_sweeps, data_interator, sizeof(pus8_msg_unpacked->SW_n_sweeps));
+				data_interator += sizeof(pus8_msg_unpacked->SW_n_sweeps);
+				break;
+			case SW_PERIOD_ARG_ID:
+				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->SW_period))
+					return INVALID_PLENGTH;
+				memcpy((uint8_t*)&pus8_msg_unpacked->SW_period, data_interator, sizeof(pus8_msg_unpacked->SW_period));
+				data_interator += sizeof(pus8_msg_unpacked->SW_period);
+				break;
 			case MACRO_SUBOP_ARG_ID:			// MacroSweep 
                 if ((data_end - data_interator) < 1)
                     return INVALID_PLENGTH;
                 pus8_msg_unpacked->macro_subop = *data_interator++;
                 break;
-
+			case PREAMPLIFIER_GAIN_ARG_ID:
+				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->preamplifier_gain))
+					return INVALID_PLENGTH;
+				memcpy((uint8_t*)&pus8_msg_unpacked->preamplifier_gain, data_interator, sizeof(pus8_msg_unpacked->preamplifier_gain));
+				data_interator += sizeof(pus8_msg_unpacked->preamplifier_gain);
+				break;
+			case PROBE_CALIBRATION_ARG_ID:
+				if ((data_end - data_interator) < sizeof(pus8_msg_unpacked->probe_calibration))
+					return INVALID_PLENGTH;
+				memcpy((uint8_t*)&pus8_msg_unpacked->probe_calibration, data_interator, sizeof(pus8_msg_unpacked->probe_calibration));
+				data_interator += sizeof(pus8_msg_unpacked->probe_calibration);
+				break;
 			default:
 				return UNDEFINED_PARAM_ID;
 				break;
@@ -183,7 +212,7 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 
 				save_sweep_table_value_FRAM(pus8_msg_unpacked->FRAM_Table_ID,
 											pus8_msg_unpacked->step_ID,
-											pus8_msg_unpacked->voltage_level);
+											pus8_msg_unpacked->sw_voltage_level);
 			}
 			// if target is FPGA
 			else if (pus8_msg_unpacked->FRAM_Table_ID == 0 && pus8_msg_unpacked->FPGA_Probe_ID != 0)
@@ -199,8 +228,8 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 				msg[msg_cnt++] = FPGA_SET_SWT_VOL_LVL;
 				msg[msg_cnt++] = pus8_msg_unpacked->FPGA_Probe_ID;
 				msg[msg_cnt++] = pus8_msg_unpacked->step_ID;
-				msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->voltage_level))[0]; // MSB
-				msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->voltage_level))[1]; // LSB 
+				msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->sw_voltage_level))[0]; // MSB
+				msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->sw_voltage_level))[1]; // LSB 
 
 				msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
@@ -231,7 +260,7 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 				msg.TM_data[1] = pus8_msg_unpacked->FRAM_Table_ID+0xF;
 				msg.TM_data[2] = pus8_msg_unpacked->step_ID;
 				msg.TM_data[3] = (uint8_t)(step_voltage & 0xFF); // MSB
-				msg.TM_data[4] = (uint8_t)((step_voltage >> 8) & 0xFF);        // LSB	
+				msg.TM_data[4] = (uint8_t)((step_voltage >> 8) & 0xFF); // LSB	
 				msg.TM_data_len			= 5;
 
 				xQueueSend(UART_OBC_Out_Queue, &msg, portMAX_DELAY);
@@ -275,6 +304,10 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_0;
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_SWT_ACTIVATE_SWEEP;
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->SW_n_sweeps))[0]; //MSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->SW_n_sweeps))[1]; //LSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->SW_period))[0];   //MSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->SW_period))[1];   //LSB
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			Sweep_Bias_Data_counter = 0;
@@ -344,8 +377,6 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 
 		case FPGA_SET_CB_VOL_LVL:
 		{
-			if(pus8_msg_unpacked->FPGA_Probe_ID < 1 || pus8_msg_unpacked->FPGA_Probe_ID > 2)
-				return UNDEFINED_PARAM_ID; // There are only 2 probes
 
 			uint8_t msg[64] = {0};
 			uint8_t msg_cnt = 0;
@@ -354,8 +385,10 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_SET_CB_VOL_LVL;
 			msg[msg_cnt++] = pus8_msg_unpacked->FPGA_Probe_ID;
-			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->voltage_level))[0]; // MSB
-			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->voltage_level))[1]; // LSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->cb_voltage_level))[0]; // MSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->cb_voltage_level))[1];
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->cb_voltage_level))[2];
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->cb_voltage_level))[3]; // LSB
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
@@ -367,8 +400,6 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 
 		case FPGA_GET_CB_VOL_LVL:
 		{
-			if(pus8_msg_unpacked->FPGA_Probe_ID < 1 || pus8_msg_unpacked->FPGA_Probe_ID > 2)
-				return UNDEFINED_PARAM_ID; // There are only 2 probes
 
 			uint8_t msg[64] = {0};
 			uint8_t msg_cnt = 0;
@@ -376,7 +407,6 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_0;
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_GET_CB_VOL_LVL;
-			msg[msg_cnt++] = pus8_msg_unpacked->FPGA_Probe_ID;
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			memset(UART_FPGA_Rx_Buffer, 0, sizeof(UART_FPGA_Rx_Buffer));
@@ -466,7 +496,9 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_SET_SWT_SAMPLES_PER_STEP;
 			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_samples_per_step))[0]; // MSB
-			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_samples_per_step))[1]; // LSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_samples_per_step))[1]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_samples_per_step))[2]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_samples_per_step))[3]; // LSB
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
@@ -508,7 +540,9 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_SET_SWT_SAMPLE_SKIP;
 			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_skip))[0]; // MSB
-			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_skip))[1]; // LSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_skip))[1]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_skip))[2];
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_skip))[3]; // LSB
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
@@ -550,7 +584,9 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_SET_SWT_SAMPLES_PER_POINT;
 			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_f))[0]; // MSB
-			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_f))[1]; // LSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_f))[1]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_f))[2]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_f))[3]; // LSB
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
@@ -592,7 +628,9 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
 			msg[msg_cnt++] = FPGA_SET_SWT_NPOINTS;
 			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_points))[0]; // MSB
-			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_points))[1]; // LSB
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_points))[1]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_points))[2]; 
+			msg[msg_cnt++] = ((uint8_t*)(&pus8_msg_unpacked->N_points))[3]; // LSB
 			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
 
 			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
@@ -642,6 +680,74 @@ TM_Err_Codes PUS_8_perform_function(SPP_header_t* SPP_h, PUS_TC_header_t* PUS_TC
 		case MACRO_SWEEP_BIAS_CONFIG: // 0xD1
         {	
 			return MacroSweep_StartTransaction(pus8_msg_unpacked->macro_subop);
+		}
+
+		case FPGA_SET_CALIBRATION:
+		{
+			uint8_t msg[64] = {0};
+			uint8_t msg_cnt = 0;
+
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_0;
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
+			msg[msg_cnt++] = FPGA_SET_CALIBRATION;
+			msg[msg_cnt++] = pus8_msg_unpacked->probe_calibration;
+			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
+
+			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
+				HAL_GPIO_WritePin(GPIOB, LED4_Pin|LED3_Pin, GPIO_PIN_SET);
+				return DEV_CPDU_EXEC_FAIL;
+			}
+			break;
+		}
+		case FPGA_GET_CALIBRATION:
+		{
+			uint8_t msg[64] = {0};
+			uint8_t msg_cnt = 0;
+
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_0;
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
+			msg[msg_cnt++] = FPGA_GET_CALIBRATION;
+			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
+
+			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
+				HAL_GPIO_WritePin(GPIOB, LED4_Pin|LED3_Pin, GPIO_PIN_SET);
+				return DEV_CPDU_EXEC_FAIL;
+			}
+			break;
+		}
+
+		case FPGA_SET_GAIN:
+		{
+			uint8_t msg[64] = {0};
+			uint8_t msg_cnt = 0;
+
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_0;
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
+			msg[msg_cnt++] = FPGA_SET_GAIN;
+			msg[msg_cnt++] = pus8_msg_unpacked->preamplifier_gain;
+			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
+
+			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
+				HAL_GPIO_WritePin(GPIOB, LED4_Pin|LED3_Pin, GPIO_PIN_SET);
+				return DEV_CPDU_EXEC_FAIL;
+			}
+			break;
+		}
+		case FPGA_GET_GAIN:
+		{
+			uint8_t msg[64] = {0};
+			uint8_t msg_cnt = 0;
+
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_0;
+			msg[msg_cnt++] = FPGA_MSG_PREAMBLE_1;
+			msg[msg_cnt++] = FPGA_GET_GAIN;
+			msg[msg_cnt++] = FPGA_MSG_POSTAMBLE;
+
+			if (HAL_UART_Transmit(&huart5, msg, msg_cnt, 100)!= HAL_OK) {
+				HAL_GPIO_WritePin(GPIOB, LED4_Pin|LED3_Pin, GPIO_PIN_SET);
+				return DEV_CPDU_EXEC_FAIL;
+			}
+			break;
 		}
 
 		case REBOOT_DEVICE:

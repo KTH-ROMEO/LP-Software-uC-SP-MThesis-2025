@@ -33,18 +33,23 @@ typedef struct {
 	uint8_t  func_id;
 	uint8_t  N_args;
     uint8_t  step_ID;
-    uint16_t voltage_level;
-    uint16_t N_skip;
+    uint16_t sw_voltage_level;
+    uint32_t cb_voltage_level;
+    uint32_t N_skip;
     uint8_t  N_steps;
-    uint16_t N_f; // Samples per points
-    uint16_t N_points;
-    uint16_t N_samples_per_step;
+    uint32_t N_f; // Samples per points
+    uint32_t N_points;
+    uint32_t N_samples_per_step;
     uint8_t FRAM_Table_ID;
     uint8_t FPGA_Probe_ID;
     uint8_t HK_ID; //ADDED
     uint8_t HK_PERIODIC_ID; //ADDED
     uint8_t HK_PERIOD_ID;
+    uint16_t SW_n_sweeps;
+    uint16_t SW_period;
     uint8_t macro_subop; // MacroSweep
+    uint8_t preamplifier_gain; 
+    uint8_t probe_calibration;
 
 } PUS_8_msg_unpacked;
 
@@ -52,16 +57,20 @@ typedef enum {
     FPGA_EN_CB_MODE          		= 0x08,
     FPGA_DIS_CB_MODE         		= 0x10,
 
-    FPGA_SET_CB_VOL_LVL      		= 0x1B,
-    FPGA_GET_CB_VOL_LVL      		= 0x21,
+    FPGA_SET_CB_VOL_LVL      		= 0x1C,
+    FPGA_GET_CB_VOL_LVL      		= 0x20,
+    FPGA_SET_CALIBRATION      		= 0x31,
+    FPGA_GET_CALIBRATION      		= 0x38,
+    FPGA_SET_GAIN             		= 0x41,
+    FPGA_GET_GAIN               	= 0x48,
 
-    FPGA_SWT_ACTIVATE_SWEEP         = 0x50,
+    FPGA_SWT_ACTIVATE_SWEEP         = 0x54,
     FPGA_SET_SWT_VOL_LVL            = 0xB4,
     FPGA_SET_SWT_STEPS              = 0x61,
-    FPGA_SET_SWT_SAMPLES_PER_STEP   = 0x72,
-    FPGA_SET_SWT_SAMPLE_SKIP        = 0x82,
-    FPGA_SET_SWT_SAMPLES_PER_POINT  = 0x92,
-    FPGA_SET_SWT_NPOINTS            = 0xA2,
+    FPGA_SET_SWT_SAMPLES_PER_STEP   = 0x74,
+    FPGA_SET_SWT_SAMPLE_SKIP        = 0x84,
+    FPGA_SET_SWT_SAMPLES_PER_POINT  = 0x94,
+    FPGA_SET_SWT_NPOINTS            = 0xA4,
 
     FPGA_GET_SWT_SWEEP_CNT          = 0x58,
     FPGA_GET_SWT_VOL_LVL            = 0xBA,
@@ -81,13 +90,18 @@ typedef enum {
 typedef enum {
     TABLE_ID_ARG_ID             = 0x01,
     STEP_ID_ARG_ID              = 0x02,
-    VOL_LVL_ARG_ID              = 0x03,
+    SW_VOL_LVL_ARG_ID           = 0x03,
     N_STEPS_ARG_ID              = 0x04,
     N_SKIP_ARG_ID               = 0x05,
     N_F_ARG_ID                  = 0x06,
     N_POINTS_ARG_ID             = 0x07,
     N_SAMPLES_PER_STEP_ARG_ID   = 0x08,
+    CB_VOL_LVL_ARG_ID           = 0x09,
+    SW_N_SWEEPS_ARG_ID          = 0x0A,
     MACRO_SUBOP_ARG_ID          = 0x0B, // MacroSweep 
+    SW_PERIOD_ARG_ID            = 0x0C,
+    PREAMPLIFIER_GAIN_ARG_ID    = 0x0D,
+    PROBE_CALIBRATION_ARG_ID    = 0x0E,
 } FPGA_Arg_ID_t;
 
 /* PUS_8_service */
